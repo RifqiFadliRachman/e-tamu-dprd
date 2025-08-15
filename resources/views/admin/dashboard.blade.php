@@ -123,28 +123,38 @@
                 </div>
             </div>
 
-         <!-- Search -->
-<div class="bg-white shadow rounded-lg p-4 mb-4 flex items-center">
-    <input 
-        type="text" 
-        placeholder="Cari nama tamu" 
-        class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#C4963C] focus:border-[#C4963C]"
-    >
+  <!-- Search -->
+<div class="bg-white shadow rounded-lg p-4 mb-4">
+    <div class="relative w-full flex items-center">
+        <!-- Ikon search -->
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </div>
+        <!-- Input -->
+        <input 
+            type="text" 
+            placeholder="Cari nama tamu" 
+            class="flex-1 border border-gray-300 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E8BF6F] focus:border-[#E8BF6F]"
+        >
+    </div>
 </div>
+
 
 <!-- Table -->
 <div class="bg-white shadow rounded-lg overflow-hidden">
     <div class="px-4 py-2 font-semibold text-lg text-[black]">Daftar Tamu Terbaru</div>
     <table class="w-full border-collapse text-center">
-        <thead class="text-[#C4963C]">
-            <tr>
-                <th class="border px-4 py-2">Id</th>
-                <th class="border px-4 py-2">Nama</th>
-                <th class="border px-4 py-2">Nomor Kontak</th>
-                <th class="border px-4 py-2">Jenis Kunjungan</th>
-                <th class="border px-4 py-2">Jumlah Tamu</th>
-            </tr>
-        </thead>
+     <thead class="text-[#E8BF6F] uppercase">
+    <tr>
+        <th class="border px-4 py-2">Id</th>
+        <th class="border px-4 py-2">Nama</th>
+        <th class="border px-4 py-2">Nomor Kontak</th>
+        <th class="border px-4 py-2">Jenis Kunjungan</th>
+        <th class="border px-4 py-2">Jumlah Tamu</th>
+    </tr>
+</thead>
         <tbody>
             @for($i=0; $i<11; $i++)
             <tr class="border-b hover:bg-[#FFF5E5]">

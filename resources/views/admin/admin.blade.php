@@ -110,13 +110,16 @@
         <div class="flex justify-between items-center mb-6">
             <div class="relative w-1/3">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
-                <input type="text" placeholder="Cari nama admin" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#C4963C]/50 focus:border-[#C4963C]">
+                <input type="text" placeholder="Cari nama admin" 
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#E8BF6F]/50 focus:border-[#E8BF6F]">
             </div>
-            <button class="bg-[#C4963C] text-white font-semibold px-5 py-2 rounded-lg hover:opacity-90">Tambah Pengguna</button>
+            <button class="bg-[#E8BF6F] text-white font-semibold px-5 py-2 rounded-lg hover:opacity-90">
+                Tambah Pengguna
+            </button>
         </div>
 
         <!-- Daftar Admin -->
@@ -124,16 +127,17 @@
             <h2 class="text-lg font-bold text-gray-800 mb-4">Daftar Admin</h2>
 
             <!-- Header Kolom -->
-            <div class="flex justify-between text-sm font-semibold text-[#C4963C] px-4 pb-2">
+            <div class="grid grid-cols-3 text-sm font-semibold text-[#E8BF6F] uppercase">
                 <span>Nama</span>
                 <span>Alamat Email</span>
+                <span>Status</span>
             </div>
 
             <!-- List Admin -->
             <div class="border rounded-lg">
-                {{-- Ganti @for dengan @foreach($admins as $admin) di aplikasi Anda --}}
                 @for($i = 0; $i < 3; $i++)
-                <div class="flex justify-between items-center p-4 hover:bg-[#FFF5E5] {{ $i < 2 ? 'border-b border-gray-200' : '' }}">
+                <div class="grid grid-cols-3 items-center p-4 hover:bg-[#FFF8E7] {{ $i < 2 ? 'border-b border-gray-200' : '' }}">
+                    <!-- Nama -->
                     <div class="flex items-center gap-3 text-gray-800">
                         <span class="p-2 bg-gray-200 rounded-full">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
@@ -142,7 +146,19 @@
                         </span>
                         <span>Fitri Rahma</span>
                     </div>
+                    <!-- Email -->
                     <span class="text-gray-600">FitriRahma22@gmail.com</span>
+                    <!-- Status + Button -->
+                    <div class="flex items-center justify-between">
+                        @if($i < 2)
+                            <span class="text-green-500">Online</span>
+                        @else
+                            <span class="text-red-400">Offline</span>
+                        @endif
+                        <button class="ml-4 bg-[#E8BF6F] text-white text-xs font-medium px-3 py-1 rounded-md hover:opacity-90">
+                            Detail
+                        </button>
+                    </div>
                 </div>
                 @endfor
             </div>
@@ -157,6 +173,7 @@
         </div>
     </div>
 </main>
+
 
     </div>
 </div>
