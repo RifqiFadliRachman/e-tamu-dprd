@@ -45,7 +45,7 @@
                     <h2 class="font-poppins font-bold text-secondary text-4xl">Formulir Instansi Terkait</h2>
                 </section>
 
-                <a href="{{ route('index') }}" class="z-10 mb-3">
+                <a href="{{ route('home') }}" class="z-10 mb-3">
                     <button type="button" class="bg-primary hover:bg-primary-dark p-3 rounded-xl transition-colors duration-200" aria-label="Tutup formulir">
                         <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <line x1="18" y1="6" x2="6" y2="18"></line>

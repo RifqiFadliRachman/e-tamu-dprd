@@ -75,7 +75,7 @@
                 const REDIRECT_DELAY = 3800; // ms
                 setTimeout(() => {
                     try { sessionStorage.setItem('introEnter', '1'); } catch (_) {}
-                    window.location.href = '/login';
+                    window.location.href = '/home';
                 }, REDIRECT_DELAY);
             });
         </script>

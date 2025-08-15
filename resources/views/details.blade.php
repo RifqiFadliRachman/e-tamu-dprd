@@ -36,7 +36,7 @@
         <div class="relative w-[1440px] h-[1024px] bg-white overflow-hidden">
             
             <header class="absolute top-[93px] right-16 z-30">
-                <a href="{{ route('index') }}">
+                <a href="{{ route('home') }}">
                     <button type="button" class="bg-primary hover:bg-primary-dark p-3 rounded-xl" aria-label="Tutup formulir">
                         <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
