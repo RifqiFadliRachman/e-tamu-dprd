@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TamuController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SuratController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -63,7 +65,6 @@ Route::post('/form-tamu', function (Request $request) {
 })->name('form.tamu.store');
 
 Route::get('/konfirmasi', fn(Request $request) => view('konfirmasi', ['step2Data' => $request->session()->get('step2_data', []), 'step3Data' => $request->session()->get('step3_data', [])]))->name('konfirmasi');
-// PERUBAHAN PENTING: Rute ini sekarang memanggil TamuController@store
 Route::post('/konfirmasi', [TamuController::class, 'store'])->name('konfirmasi.store');
 
 Route::get('/sukses', fn() => view('success'))->name('sukses');
@@ -80,12 +81,19 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 // ==========================================================
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [TamuController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/daftar-tamu', fn() => view('admin.daftar-tamu'))->name('admin.daftar-tamu');
-    Route::get('/surat', fn() => view('admin.surat'))->name('admin.surat');
-    Route::get('/admin', fn() => view('admin.admin'))->name('admin.admin');
-
     Route::get('/daftar-tamu', [TamuController::class, 'showDaftarTamu'])->name('admin.daftar-tamu');
+    
+    // Rute baru untuk mengambil detail tamu via API
+    Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
 
-    Route::get('/surat', fn() => view('admin.surat'))->name('admin.surat');
-    Route::get('/admin', fn() => view('admin.admin'))->name('admin.admin');
+   Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
+    Route::delete('/surat/{tamu}', [SuratController::class, 'destroy'])->name('admin.surat.destroy');
+
+    // Rute untuk manajemen admin
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.admin');
+    Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
+    Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
+    Route::get('/admin/{user}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::put('/admin/{user}', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/admin/{user}', [AdminController::class, 'destroy'])->name('admin.destroy');
 });

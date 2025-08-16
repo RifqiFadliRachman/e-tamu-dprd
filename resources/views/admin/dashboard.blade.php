@@ -12,7 +12,6 @@
 <body class="bg-gray-100 font-sans">
 
     <div class="flex h-screen">
-        <!-- Sidebar -->
         <aside class="w-64 bg-white border-r shadow-md flex flex-col">
             <div class="flex items-center p-4 border-b">
                 <img src="{{ asset('images/logo-dprd.png') }}" alt="Logo DPRD" class="w-10 h-10 mr-2">
@@ -57,7 +56,6 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <div class="flex-1 flex flex-col">
             <header class="bg-white flex justify-between items-center py-4 px-6 border-b">
                 <div class="flex items-center">
@@ -80,11 +78,14 @@
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                     </button>
+                    
+                    {{-- AWAL PERUBAHAN --}}
                     <div x-data="{ open: false }" class="relative flex items-center gap-3">
                         <div @click="open = !open"
-                            class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold cursor-pointer">
-                            F</div>
-                        <span @click="open = !open" class="cursor-pointer">Halo, Fitri</span>
+                            class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold cursor-pointer uppercase">
+                             {{ substr(Auth::user()->name, 0, 1) }}
+                        </div>
+                        <span @click="open = !open" class="cursor-pointer">Halo, {{ Auth::user()->name }}</span>
                         <div x-show="open" @click.outside="open = false" x-transition
                             class="absolute right-0 mt-12 w-32 bg-white border rounded shadow-lg py-2 z-50">
                             <form method="POST" action="{{ route('logout') }}">
@@ -94,14 +95,13 @@
                             </form>
                         </div>
                     </div>
+                    {{-- AKHIR PERUBAHAN --}}
+                    
                 </div>
             </header>
 
-            <!-- Content -->
             <main class="p-6 overflow-y-auto">
-                <!-- Cards -->
                 <div class="grid grid-cols-4 gap-4 mb-6">
-                    <!-- Total Daftar Tamu -->
                     <div class="bg-white shadow p-4 rounded-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-green-600" fill="currentColor"
                             viewBox="0 0 20 20">
@@ -114,7 +114,6 @@
                         </div>
                     </div>
 
-                    <!-- Kunjungan Kerja -->
                     <div class="bg-white shadow p-4 rounded-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-blue-600" fill="currentColor"
                             viewBox="0 0 20 20">
@@ -128,7 +127,6 @@
                         </div>
                     </div>
 
-                    <!-- Kunjungan Tamu -->
                     <div class="bg-white shadow p-4 rounded-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-yellow-500" fill="currentColor"
                             viewBox="0 0 20 20">
@@ -142,7 +140,6 @@
                         </div>
                     </div>
 
-                    <!-- Kunjungan Lainnya -->
                     <div class="bg-white shadow p-4 rounded-lg flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 text-red-600" fill="currentColor"
                             viewBox="0 0 20 20">
@@ -158,7 +155,6 @@
                     </div>
                 </div>
 
-                <!-- Search Form -->
                 <div class="bg-white shadow rounded-lg p-4 mb-4">
                     <form action="{{ route('admin.dashboard') }}" method="GET">
                         <div class="relative w-full flex items-center">
@@ -176,7 +172,6 @@
                     </form>
                 </div>
 
-                <!-- Table -->
                 <div class="bg-white shadow rounded-lg overflow-hidden">
                     <div class="px-4 py-2 font-semibold text-lg text-[black]">Daftar Tamu Terbaru</div>
                     <table class="w-full border-collapse text-center">

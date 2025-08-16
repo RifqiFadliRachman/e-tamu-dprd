@@ -13,12 +13,17 @@ class Tamu extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'nama',
-        'instansi',
-        'jabatan',
-        'nomor_kontak',
-        'jenis_kunjungan',
-        'jumlah_peserta',
-    ];
+   protected $fillable = [
+    'nama',
+    'instansi',
+    'jabatan',
+    'nomor_kontak',
+    'jenis_kunjungan',
+    'jumlah_peserta',
+    'tanggal_kunjungan',
+    'waktu_kunjungan',
+    'tujuan_kunjungan',
+    'surat_permohonan_path',
+    'surat_tugas_path',
+];
 }

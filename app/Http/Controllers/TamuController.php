@@ -6,6 +6,7 @@ use App\Models\Tamu;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Session;
 
 class TamuController extends Controller
@@ -25,6 +26,13 @@ class TamuController extends Controller
             'nomor_kontak' => $step3Data['nomor_kontak'] ?? 'Data tidak ada',
             'jenis_kunjungan' => $step2Data['jenis_kunjungan'] ?? 'Data tidak ada',
             'jumlah_peserta' => $step2Data['jumlah_peserta'] ?? 1,
+            'tanggal_kunjungan' => $step2Data['tanggal_kunjungan'] ?? null,
+            'waktu_kunjungan' => $step2Data['waktu_kunjungan'] ?? null,
+            'tujuan_kunjungan' => $step2Data['topik_kunjungan'] ?? 'Tujuan tidak diisi',
+            
+            // --- PERUBAHAN PENTING ADA DI SINI ---
+            'surat_permohonan_path' => Session::get('surat_pemberitahuan_path'),
+            'surat_tugas_path' => Session::get('surat_tugas_path'),
         ];
 
         Tamu::create($dataToSave);
@@ -40,25 +48,19 @@ class TamuController extends Controller
      */
     public function dashboard(Request $request): View
     {
-        // Data untuk kartu ringkasan (selalu mengambil semua data)
         $allGuests = Tamu::all();
-
-        // Query untuk tabel (bisa difilter dengan pencarian)
         $query = Tamu::query();
 
-        // Logika untuk pencarian berdasarkan nama
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where('nama', 'like', '%' . $searchTerm . '%');
         }
 
-        // Ambil data untuk tabel, urutkan dari yang terbaru
         $daftarTamu = $query->latest()->get();
 
-        // Kirim semua data yang dibutuhkan ke view
         return view('admin.dashboard', [
-            'daftarTamu' => $daftarTamu, // Untuk tabel
-            'allGuests' => $allGuests,   // Untuk kartu ringkasan
+            'daftarTamu' => $daftarTamu,
+            'allGuests' => $allGuests,
         ]);
     }
 
@@ -88,5 +90,13 @@ class TamuController extends Controller
         return view('admin.daftar-tamu', [
             'daftarTamu' => $daftarTamu
         ]);
+    }
+
+    /**
+     * Mengambil dan menampilkan detail seorang tamu dalam format JSON.
+     */
+    public function showDetail(Tamu $tamu): JsonResponse
+    {
+        return response()->json($tamu);
     }
 }
