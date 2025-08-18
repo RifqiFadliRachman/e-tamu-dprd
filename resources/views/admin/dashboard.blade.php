@@ -79,7 +79,6 @@
                         </svg>
                     </button>
                     
-                    {{-- AWAL PERUBAHAN --}}
                     <div x-data="{ open: false }" class="relative flex items-center gap-3">
                         <div @click="open = !open"
                             class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold cursor-pointer uppercase">
@@ -95,7 +94,6 @@
                             </form>
                         </div>
                     </div>
-                    {{-- AKHIR PERUBAHAN --}}
                     
                 </div>
             </header>
@@ -156,20 +154,18 @@
                 </div>
 
                 <div class="bg-white shadow rounded-lg p-4 mb-4">
-                    <form action="{{ route('admin.dashboard') }}" method="GET">
-                        <div class="relative w-full flex items-center">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <input type="text" name="search" placeholder="Cari nama tamu"
-                                value="{{ request('search') }}"
-                                class="flex-1 border border-gray-300 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E8BF6F] focus:border-[#E8BF6F]">
+                    <div class="relative w-full flex items-center">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
                         </div>
-                    </form>
+                        <input type="text" id="searchInput" name="search" placeholder="Cari nama tamu"
+                            value="{{ request('search') }}"
+                            class="flex-1 border border-gray-300 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#E8BF6F] focus:border-[#E8BF6F]">
+                    </div>
                 </div>
 
                 <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -184,22 +180,8 @@
                                 <th class="border px-4 py-2">Jumlah Tamu</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @forelse ($daftarTamu as $tamu)
-                                <tr class="border-b hover:bg-[#FFF5E5]">
-                                    <td class="px-4 py-2">{{ $tamu->id }}</td>
-                                    <td class="px-4 py-2">{{ $tamu->nama }}</td>
-                                    <td class="px-4 py-2">{{ $tamu->nomor_kontak }}</td>
-                                    <td class="px-4 py-2">{{ $tamu->jenis_kunjungan }}</td>
-                                    <td class="px-4 py-2">{{ $tamu->jumlah_peserta }}</td>
-                                </tr>
-                            @empty
-                                <tr class="border-b">
-                                    <td colspan="5" class="text-center py-4 text-gray-500">
-                                        Tidak ada tamu dengan nama tersebut.
-                                    </td>
-                                </tr>
-                            @endforelse
+                        <tbody id="tamuTableBody">
+                           @include('admin.partials.tamu-table', ['daftarTamu' => $daftarTamu])
                         </tbody>
                     </table>
                 </div>
@@ -207,6 +189,38 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const tableBody = document.getElementById('tamuTableBody');
+            let searchTimeout;
+
+            searchInput.addEventListener('input', function () {
+                const query = this.value;
+
+                // Hapus timeout sebelumnya untuk debounce
+                clearTimeout(searchTimeout);
+
+                // Atur timeout baru
+                searchTimeout = setTimeout(() => {
+                    fetch(`{{ route('admin.tamu.search') }}?search=${encodeURIComponent(query)}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.text();
+                        })
+                        .then(html => {
+                            tableBody.innerHTML = html;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching search results:', error);
+                            tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-red-500">Terjadi kesalahan saat memuat data.</td></tr>';
+                        });
+                }, 300); // Waktu tunda 300ms sebelum mengirim request
+            });
+        });
+    </script>
 </body>
 
 </html>

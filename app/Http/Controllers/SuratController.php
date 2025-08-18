@@ -4,53 +4,69 @@ namespace App\Http\Controllers;
 
 use App\Models\Tamu;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
 
 class SuratController extends Controller
 {
     /**
-     * Menampilkan daftar surat yang telah diunggah.
+     * Menampilkan halaman Surat dengan data yang bisa dicari.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $search = $request->input('search');
+        $query = Tamu::where(function ($q) {
+            $q->whereNotNull('surat_permohonan_path')
+              ->orWhereNotNull('surat_tugas_path');
+        });
 
-        // Ambil data tamu yang memiliki setidaknya satu surat
-        $tamusWithSurat = Tamu::query()
-            ->where(function ($query) {
-                $query->whereNotNull('surat_permohonan_path')
-                      ->orWhereNotNull('surat_tugas_path');
-            })
-            ->when($search, function ($query, $search) {
-                return $query->where('nama', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate(10);
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where('nama', 'like', '%' . $searchTerm . '%');
+        }
 
-        return view('admin.surat', compact('tamusWithSurat', 'search'));
+        $tamusWithSurat = $query->latest()->paginate(10);
+
+        return view('admin.surat', compact('tamusWithSurat'));
     }
 
     /**
-     * Menghapus file surat (permohonan atau tugas).
+     * Menangani permintaan pencarian live untuk halaman surat (AJAX).
      */
-    public function destroy(Tamu $tamu, Request $request)
+    public function search(Request $request): View
     {
-        $tipeSurat = $request->input('tipe');
+        $query = Tamu::where(function ($q) {
+            $q->whereNotNull('surat_permohonan_path')
+              ->orWhereNotNull('surat_tugas_path');
+        });
 
-        if ($tipeSurat === 'permohonan' && $tamu->surat_permohonan_path) {
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where('nama', 'like', '%' . $searchTerm . '%');
+        }
+
+        // --- PERUBAHAN DI SINI: Gunakan 'tamusWithSurat' agar konsisten ---
+        $tamusWithSurat = $query->latest()->paginate(10);
+
+        return view('admin.partials.surat-content', compact('tamusWithSurat'));
+    }
+
+    /**
+     * Menghapus file surat yang dipilih.
+     */
+    public function destroy(Request $request, Tamu $tamu)
+    {
+        if ($request->input('tipe') === 'permohonan' && $tamu->surat_permohonan_path) {
             Storage::disk('public')->delete($tamu->surat_permohonan_path);
             $tamu->surat_permohonan_path = null;
-            $tamu->save();
-            return back()->with('success', 'Surat permohonan berhasil dihapus.');
         }
 
-        if ($tipeSurat === 'tugas' && $tamu->surat_tugas_path) {
+        if ($request->input('tipe') === 'tugas' && $tamu->surat_tugas_path) {
             Storage::disk('public')->delete($tamu->surat_tugas_path);
             $tamu->surat_tugas_path = null;
-            $tamu->save();
-            return back()->with('success', 'Surat tugas berhasil dihapus.');
         }
 
-        return back()->with('error', 'Gagal menghapus surat.');
+        $tamu->save();
+
+        return back()->with('success', 'Surat berhasil dihapus.');
     }
 }

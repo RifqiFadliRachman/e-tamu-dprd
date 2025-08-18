@@ -29,8 +29,6 @@ class TamuController extends Controller
             'tanggal_kunjungan' => $step2Data['tanggal_kunjungan'] ?? null,
             'waktu_kunjungan' => $step2Data['waktu_kunjungan'] ?? null,
             'tujuan_kunjungan' => $step2Data['topik_kunjungan'] ?? 'Tujuan tidak diisi',
-            
-            // --- PERUBAHAN PENTING ADA DI SINI ---
             'surat_permohonan_path' => Session::get('surat_pemberitahuan_path'),
             'surat_tugas_path' => Session::get('surat_tugas_path'),
         ];
@@ -53,7 +51,11 @@ class TamuController extends Controller
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where('nama', 'like', '%' . $searchTerm . '%');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_kontak', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_kunjungan', 'like', '%' . $searchTerm . '%');
+            });
         }
 
         $daftarTamu = $query->latest()->get();
@@ -65,12 +67,36 @@ class TamuController extends Controller
     }
 
     /**
-     * Menampilkan halaman Daftar Tamu dengan data yang bisa difilter dan dicari.
+     * Menangani permintaan pencarian tamu secara live untuk dashboard.
+     */
+    public function search(Request $request): View
+    {
+        $query = Tamu::query();
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_kontak', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_kunjungan', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        $daftarTamu = $query->latest()->get();
+
+        return view('admin.partials.tamu-table', compact('daftarTamu'));
+    }
+
+    /**
+     * Menampilkan halaman Daftar Tamu (Pemuatan Awal).
+     * Metode ini akan mengambil data menggunakan logika yang sama dengan pencarian
+     * dan merender view lengkap.
      */
     public function showDaftarTamu(Request $request): View
     {
         $query = Tamu::query();
 
+        // Logika Filter (DIKEMBALIKAN)
         if ($request->has('filter') && $request->filter != 'semua') {
             $filterValue = $request->filter;
             if ($filterValue === 'lainnya') {
@@ -80,16 +106,52 @@ class TamuController extends Controller
             }
         }
 
+        // Logika Pencarian (jika ada parameter search di URL awal)
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
-            $query->where('nama', 'like', '%' . $searchTerm . '%');
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_kontak', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_kunjungan', 'like', '%' . $searchTerm . '%');
+            });
         }
 
         $daftarTamu = $query->latest()->paginate(10);
 
-        return view('admin.daftar-tamu', [
-            'daftarTamu' => $daftarTamu
-        ]);
+        return view('admin.daftar-tamu', ['daftarTamu' => $daftarTamu]);
+    }
+    
+    /**
+     * Menangani permintaan pencarian live untuk halaman daftar tamu (AJAX).
+     * Metode ini HANYA akan mengembalikan view parsial.
+     */
+    public function searchDaftarTamu(Request $request): View
+    {
+        $query = Tamu::query();
+
+        // Logika Filter
+        if ($request->has('filter') && $request->filter != 'semua') {
+            $filterValue = $request->filter;
+            if ($filterValue === 'lainnya') {
+                $query->whereNotIn('jenis_kunjungan', ['kunjungan_kerja', 'kunjungan_tamu']);
+            } else {
+                $query->where('jenis_kunjungan', $filterValue);
+            }
+        }
+
+        // Logika Pencarian
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_kontak', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_kunjungan', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        $daftarTamu = $query->latest()->paginate(10);
+
+        return view('admin.partials.daftar-tamu-content', ['daftarTamu' => $daftarTamu]);
     }
 
     /**

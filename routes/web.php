@@ -83,14 +83,19 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [TamuController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/daftar-tamu', [TamuController::class, 'showDaftarTamu'])->name('admin.daftar-tamu');
     
-    // Rute baru untuk mengambil detail tamu via API
+    Route::get('/tamu/search', [TamuController::class, 'search'])->name('admin.tamu.search');
+    Route::get('/daftar-tamu/search', [TamuController::class, 'searchDaftarTamu'])->name('admin.daftar-tamu.search');
+    
     Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
 
-   Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
+    Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
+    Route::get('/surat/search', [SuratController::class, 'search'])->name('admin.surat.search');
     Route::delete('/surat/{tamu}', [SuratController::class, 'destroy'])->name('admin.surat.destroy');
 
     // Rute untuk manajemen admin
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.admin');
+    // RUTE BARU UNTUK LIVE SEARCH ADMIN
+    Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.admin.search');
     Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
     Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
     Route::get('/admin/{user}/edit', [AdminController::class, 'edit'])->name('admin.edit');

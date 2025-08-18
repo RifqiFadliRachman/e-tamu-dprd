@@ -50,7 +50,6 @@
                 <div class="flex items-center gap-6">
                     <button class="relative text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
                     
-                    {{-- AWAL PERUBAHAN --}}
                     <div x-data="{ open: false }" class="relative flex items-center gap-3">
                         <div @click="open = !open" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold cursor-pointer uppercase">
                             {{ substr(Auth::user()->name, 0, 1) }}
@@ -63,71 +62,100 @@
                             </form>
                         </div>
                     </div>
-                    {{-- AKHIR PERUBAHAN --}}
                     
                 </div>
             </header>
 
             <main class="flex-1 p-6">
 
-                {{-- BLOK NOTIFIKASI SUKSES --}}
                 @if (session('success'))
                     <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
                         {{ session('success') }}
                     </div>
                 @endif
-                {{-- AKHIR BLOK NOTIFIKASI --}}
+                 @if (session('error'))
+                    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
 
                 <div class="bg-white p-6 rounded-lg shadow-sm">
                     <div class="flex justify-between items-center mb-6">
-                        <form method="GET" action="{{ route('admin.admin') }}" class="relative w-1/3">
+                        <div class="relative w-1/3">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></div>
-                            <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="Cari nama admin" class="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-[#E8BF6F]/50 focus:border-[#E8BF6F] placeholder-gray-400 text-gray-700">
-                        </form>
+                            <input type="text" id="searchInputAdmin" name="search" value="{{ $search ?? '' }}" placeholder="Cari nama atau email admin" class="w-full pl-12 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-1 focus:ring-[#E8BF6F]/50 focus:border-[#E8BF6F] placeholder-gray-400 text-gray-700">
+                        </div>
                         <a href="{{ route('admin.create') }}" class="bg-[#E8BF6F] text-white font-semibold px-6 py-2 rounded-full hover:opacity-90">
                             Tambah Pengguna
                         </a>
                     </div>
 
-                    <div>
+                    <div id="adminContentContainer">
                         <h2 class="text-lg font-bold text-gray-800 mb-4">Daftar Admin</h2>
-                        <div class="grid grid-cols-3 text-sm font-semibold text-[#E8BF6F] mb-2">
-                            <span>Nama</span>
-                            <span>Alamat Email</span>
-                            <span class="text-right pr-10">Aksi</span>
-                        </div>
-                        <div class="border rounded-lg divide-y divide-gray-200">
-                            @forelse($users as $user)
-                                <div class="grid grid-cols-3 items-center p-3 hover:bg-[#FFF8E7]">
-                                    <div class="flex items-center gap-3 text-gray-800">
-                                        <span class="p-2 bg-gray-200 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span>
-                                        <span>{{ $user->name }}</span>
-                                    </div>
-                                    <span class="text-gray-600">{{ $user->email }}</span>
-                                    <div class="flex items-center gap-3 justify-end">
-                                        <a href="{{ route('admin.edit', $user) }}" class="text-gray-500 hover:text-black-700">
-                                            <svg width="30" height="30" viewBox="0 0 36 35" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="35" fill="#3E9E66" /><path d="M26 16.8V26H10V10H19.2L21.2 8H8V28H28V14.8L26 16.8Z" fill="white" /><path d="M20.5 18.3L17 19L17.7 15.5L27.6 5.6C28.4 4.8 29.6 4.8 30.4 5.6C31.2 6.4 31.2 7.6 30.4 8.4L20.5 18.3Z" stroke="white" stroke-width="2" stroke-miterlimit="10" /></svg>
-                                        </a>
-                                        <form action="{{ route('admin.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700">
-                                                <svg width="30" height="30" viewBox="0 0 36 35" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="35" fill="#FF0000" fill-opacity="0.65" /><path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 6V8.3H7V10.6H29V8.3H23.5V6H12.5ZM8.375 11.75H11.125V26.2236L11.6945 26.7H24.3054L24.875 26.2236V11.75H27.625V27.1764L25.4446 29H10.5555L8.375 27.1764V11.75Z" fill="white" /></svg>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="p-3 text-center text-gray-500">Tidak ada pengguna yang ditemukan.</p>
-                            @endforelse
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        {{ $users->links() }}
+                        {{-- Header kolom telah dihapus --}}
+                        @include('admin.partials.admin-content', ['users' => $users])
                     </div>
                 </div>
             </main>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInputAdmin');
+            const contentContainer = document.getElementById('adminContentContainer');
+            let searchTimeout;
+
+            const fetchData = async (url) => {
+                const header = contentContainer.querySelector('h2');
+                const gridHeader = contentContainer.querySelector('.grid');
+                if(header) header.remove();
+                if(gridHeader) gridHeader.remove();
+
+                contentContainer.style.opacity = '0.5';
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    const html = await response.text();
+                    
+                    // Header kolom telah dihapus dari sini juga
+                    contentContainer.innerHTML = `
+                        <h2 class="text-lg font-bold text-gray-800 mb-4">Daftar Admin</h2>
+                        ${html}
+                    `;
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    contentContainer.innerHTML = '<div class="p-4 text-center text-red-500">Gagal memuat data.</div>';
+                } finally {
+                    contentContainer.style.opacity = '1';
+                }
+            };
+
+            const performSearch = (page = 1) => {
+                const query = searchInput.value;
+                const searchUrl = new URL('{{ route('admin.admin.search') }}');
+                searchUrl.searchParams.set('search', query);
+                searchUrl.searchParams.set('page', page);
+                fetchData(searchUrl.toString());
+            };
+
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => performSearch(1), 300);
+            });
+
+            contentContainer.addEventListener('click', (event) => {
+                const link = event.target.closest('a.page-link');
+                if (link && link.href) {
+                    event.preventDefault();
+                    const url = new URL(link.href);
+                    const page = url.searchParams.get('page');
+                    if (page) {
+                        performSearch(page);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -5,32 +5,52 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class AdminController extends Controller
 {
     /**
-     * Menampilkan daftar semua admin.
+     * Menampilkan halaman manajemen admin.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
+        $query = User::query();
         $search = $request->input('search');
 
-        $users = User::query()
-            ->when($search, function ($query, $search) {
-                return $query->where('name', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%");
-            })
-            ->latest()
-            ->paginate(10);
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
 
+        $users = $query->paginate(10);
         return view('admin.admin', compact('users', 'search'));
     }
 
     /**
-     * Menampilkan form untuk menambah admin baru.
+     * Menangani permintaan pencarian live untuk halaman admin (AJAX).
      */
-    public function create()
+    public function search(Request $request): View
+    {
+        $query = User::query();
+        $search = $request->input('search');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $users = $query->paginate(10);
+        return view('admin.partials.admin-content', compact('users'));
+    }
+
+    /**
+     * Menampilkan form untuk membuat admin baru.
+     */
+    public function create(): View
     {
         return view('admin.create');
     }
@@ -41,9 +61,9 @@ class AdminController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         User::create([
@@ -52,13 +72,13 @@ class AdminController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('admin.admin')->with('success', 'Pengguna berhasil ditambahkan.');
+        return redirect()->route('admin.admin')->with('success', 'Admin berhasil ditambahkan.');
     }
 
     /**
      * Menampilkan form untuk mengedit admin.
      */
-    public function edit(User $user)
+    public function edit(User $user): View
     {
         return view('admin.edit', compact('user'));
     }
@@ -69,9 +89,9 @@ class AdminController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
         $user->name = $request->name;
@@ -81,7 +101,7 @@ class AdminController extends Controller
         }
         $user->save();
 
-        return redirect()->route('admin.admin')->with('success', 'Pengguna berhasil diperbarui.');
+        return redirect()->route('admin.admin')->with('success', 'Admin berhasil diperbarui.');
     }
 
     /**
@@ -89,7 +109,12 @@ class AdminController extends Controller
      */
     public function destroy(User $user)
     {
+        // Mencegah user menghapus akunnya sendiri
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
         $user->delete();
-        return redirect()->route('admin.admin')->with('success', 'Pengguna berhasil dihapus.');
+        return redirect()->route('admin.admin')->with('success', 'Admin berhasil dihapus.');
     }
 }

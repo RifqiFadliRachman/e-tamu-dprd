@@ -120,65 +120,24 @@
 
                     <!-- Search -->
                     <div class="mb-4">
-                        <form action="{{ route('admin.daftar-tamu') }}" method="GET">
-                            <input type="hidden" name="filter" value="{{ request('filter', 'semua') }}">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                        viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input type="text" name="search" placeholder="Cari nama tamu"
-                                    value="{{ request('search') }}" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-[#E8BF6F]" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text" id="searchInputDaftar" name="search" placeholder="Cari nama, no. kontak, atau jenis kunjungan"
+                                value="{{ request('search') }}" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full leading-5 
                                       bg-white placeholder-gray-400 focus:outline-none 
                                       focus:ring-1 focus:ring-[#E8BF6F] focus:border-[#E8BF6F] sm:text-sm">
-                            </div>
-                        </form>
+                        </div>
                     </div>
 
-                    <!-- Table -->
-                    <div class="bg-white shadow rounded-lg overflow-hidden">
-                        <table class="w-full border-collapse text-left">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    {{-- AWAL PERUBAHAN HEADER TABEL --}}
-                                    <th class="px-4 py-2 text-sm font-semibold text-[#E8BF6F]">ID</th>
-                                    <th class="px-4 py-2 text-sm font-semibold text-[#E8BF6F]">NAMA</th>
-                                    <th class="px-4 py-2 text-sm font-semibold text-[#E8BF6F]">ASAL INSTANSI</th>
-                                    <th class="px-4 py-2 text-sm font-semibold text-[#E8BF6F]">NOMOR KONTAK</th>
-                                    <th class="px-4 py-2 text-sm font-semibold text-[#E8BF6F]">JENIS KUNJUNGAN</th>
-                                    <th class="px-4 py-2 text-sm font-semibold text-[#E8BF6F]">JUMLAH TAMU</th>
-                                    {{-- AKHIR PERUBAHAN HEADER TABEL --}}
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                @forelse ($daftarTamu as $tamu)
-                                <tr @click="openDetail({{ $tamu->id }})" class="hover:bg-[#FFF4E0] transition-colors duration-200 cursor-pointer">
-                                    {{-- AWAL PERUBAHAN ISI TABEL --}}
-                                    <td class="px-4 py-2 text-sm text-gray-900">{{ $tamu->id }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-900">{{ $tamu->nama }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-900">{{ $tamu->instansi }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-900">{{ $tamu->nomor_kontak }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-900">{{ Str::title(str_replace('_', ' ', $tamu->jenis_kunjungan)) }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-900">{{ $tamu->jumlah_peserta }}</td>
-                                    {{-- AKHIR PERUBAHAN ISI TABEL --}}
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="6" class="px-4 py-2 text-center text-sm text-gray-500">
-                                        Tidak ada data tamu untuk kriteria ini.
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-
-                        <!-- Custom Pagination -->
-                        <div class="flex justify-end items-center p-4 space-x-2">
-                            {{ $daftarTamu->appends(request()->query())->onEachSide(1)->links('vendor.pagination.custom') }}
-                        </div>
+                    <!-- Table and Pagination Container -->
+                    <div id="tableContainer">
+                        @include('admin.partials.daftar-tamu-content', ['daftarTamu' => $daftarTamu])
                     </div>
                 </main>
 
@@ -234,6 +193,66 @@
         </div>
 
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInputDaftar');
+            const tableContainer = document.getElementById('tableContainer');
+            let searchTimeout;
 
+            // Fungsi untuk mengambil data
+            const fetchData = async (url) => {
+                tableContainer.style.opacity = '0.5';
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const html = await response.text();
+                    tableContainer.innerHTML = html;
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    tableContainer.innerHTML = '<div class="p-4 text-center text-red-500">Gagal memuat data. Silakan coba lagi.</div>';
+                } finally {
+                    tableContainer.style.opacity = '1';
+                }
+            };
+
+            // Fungsi untuk membangun URL dan memanggil fetchData
+            const performSearch = (page = 1) => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const filter = urlParams.get('filter') || 'semua';
+                const query = searchInput.value;
+                
+                const searchUrl = new URL('{{ route('admin.daftar-tamu.search') }}');
+                searchUrl.searchParams.set('search', query);
+                searchUrl.searchParams.set('filter', filter);
+                searchUrl.searchParams.set('page', page);
+                
+                fetchData(searchUrl.toString());
+            };
+
+            // Event listener untuk input pencarian
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => performSearch(1), 300);
+            });
+
+            // Event listener untuk paginasi menggunakan event delegation
+            tableContainer.addEventListener('click', (event) => {
+                const link = event.target.closest('a.page-link'); 
+                if (link && link.href) {
+                    event.preventDefault();
+                    
+                    const url = new URL(link.href);
+                    const page = url.searchParams.get('page');
+                    if (page) {
+                        performSearch(page);
+                    }
+                }
+            });
+        });
+    </script>
+    
 </body>
 </html>
