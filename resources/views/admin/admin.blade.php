@@ -47,23 +47,58 @@
                         <p class="text-sm text-gray-500">Daftar admin yang terdaftar</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-6">
-                    <button class="relative text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
-                    
-                    <div x-data="{ open: false }" class="relative flex items-center gap-3">
-                        <div @click="open = !open" class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold cursor-pointer uppercase">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
-                        <span @click="open = !open" class="cursor-pointer">Halo, {{ Auth::user()->name }}</span>
-                        <div x-show="open" @click.outside="open = false" x-transition class="absolute right-0 mt-12 w-32 bg-white border rounded shadow-lg py-2 z-50">
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button>
-                            </form>
-                        </div>
-                    </div>
-                    
+                {{-- ================================================================= --}}
+    {{-- KODE HEADER FINAL (NOTIFIKASI + PROFIL DENGAN NAMA) --}}
+    {{-- ================================================================= --}}
+    <div class="flex items-center gap-5">
+        <button class="relative text-gray-500 hover:text-gray-800 transition-colors">
+            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            <span class="absolute top-0.5 right-0.5 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
+        </button>
+
+        <div x-data="{ open: false }" class="relative">
+            <div @click="open = !open" class="flex items-center gap-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold uppercase ring-2 ring-offset-2 ring-gray-300 hover:ring-[#E8BF6F] transition-all">
+                    {{ substr(Auth::user()->name, 0, 1) }}
                 </div>
+                <span class="hidden md:inline font-medium text-gray-700">Halo, {{ Auth::user()->name }}</span>
+            </div>
+
+            <div x-show="open" 
+                 @click.outside="open = false" 
+                 x-transition:enter="transition ease-out duration-200" 
+                 x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                 x-transition:enter-end="opacity-100 transform translate-y-0" 
+                 x-transition:leave="transition ease-in duration-150" 
+                 x-transition:leave-start="opacity-100 transform translate-y-0" 
+                 x-transition:leave-end="opacity-0 transform -translate-y-2" 
+                 class="absolute right-0 mt-3 w-64 bg-[#2D2D2D] text-white rounded-xl shadow-lg p-4 z-50"
+                 style="display: none;">
+
+                <div class="flex items-center gap-4 border-b border-gray-600 pb-3 mb-3">
+                    <div class="w-12 h-12 rounded-full bg-gray-600 flex-shrink-0 flex items-center justify-center text-gray-300 font-bold text-xl uppercase border-2 border-gray-400">
+                        {{ substr(Auth::user()->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <h3 class="font-semibold">{{ Auth::user()->name }}</h3>
+                        <p class="text-xs text-gray-400">{{ Auth::user()->email }}</p>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-red-600 hover:text-white rounded-md transition-colors duration-200 flex items-center gap-3">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        </svg>
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
             </header>
 
             <main class="flex-1 p-6">
