@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,51 +29,95 @@
         }
     </script>
     <style>
-        .enter-hidden { opacity: 0; transform: translateY(16px); filter: blur(2px); }
-        .enter-show { opacity: 1; transform: translateY(0); filter: blur(0); transition: all 700ms cubic-bezier(.22,.9,.3,1); }
-        .enter-delay-1 { transition-delay: 120ms; }
-        .enter-delay-2 { transition-delay: 240ms; }
-        .enter-delay-3 { transition-delay: 360ms; }
-        .enter-delay-4 { transition-delay: 480ms; }
+        .enter-hidden {
+            opacity: 0;
+            transform: translateY(16px);
+            filter: blur(2px);
+        }
+
+        /* New: explicit directions */
+        .enter-from-top {
+            opacity: 0;
+            transform: translateY(-24px);
+            filter: blur(2px);
+        }
+
+        .enter-from-bottom {
+            opacity: 0;
+            transform: translateY(24px);
+            filter: blur(2px);
+        }
+
+        /* Ensure transition is present before the change */
+        .enter-hidden,
+        .enter-from-top,
+        .enter-from-bottom {
+            transition: all 700ms cubic-bezier(.22, .9, .3, 1);
+            will-change: transform, opacity;
+        }
+
+        .enter-show {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+            transition: all 700ms cubic-bezier(.22, .9, .3, 1);
+        }
+
+        .enter-delay-1 {
+            transition-delay: 120ms;
+        }
+
+        .enter-delay-2 {
+            transition-delay: 240ms;
+        }
+
+        .enter-delay-3 {
+            transition-delay: 360ms;
+        }
+
+        .enter-delay-4 {
+            transition-delay: 480ms;
+        }
     </style>
 </head>
+
 <body class="bg-primary min-h-screen font-poppins overflow-x-hidden">
     <div class="w-full min-h-screen bg-primary flex justify-center items-start">
         <div id="pageRoot" class="relative w-screen h-[1024px] bg-primary">
-            
+
             <!-- Left Section - Hero -->
-            <div id="heroLeft" class="absolute top-0 left-0 w-[44vw] h-[1024px] bg-black bg-cover bg-center overflow-hidden enter-hidden" style="background-image: url('{{ asset('images/background.jpg') }}');">
+            <div id="heroLeft" class="absolute top-0 left-0 w-[44vw] h-[1024px] bg-black bg-cover bg-center overflow-hidden enter-from-top" style="background-image: url('{{ asset('images/background.jpg') }}');">
                 <!-- overlay -->
                 <div class="absolute inset-0 bg-black/60"></div>
 
                 <!-- content centered on the left section -->
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-10 gap-6">
-                    <h1 id="heroTitle" class="text-white font-bold leading-tight tracking-tight text-[40px] md:text-[52px] lg:text-[56px] enter-hidden enter-delay-1">
-                        Selamat Datang di App<br/>Buku Tamu Online
+                    <h1 id="heroTitle" class="text-white font-bold leading-tight tracking-tight text-[40px] md:text-[52px] lg:text-[56px] enter-from-top enter-delay-1">
+                        Selamat Datang di App<br />Buku Tamu Online
                     </h1>
-                    <img id="heroLogo" src="{{ asset('images/logo-dprd.png') }}" alt="Logo DPRD" class="mt-4 w-48 h-auto enter-hidden enter-delay-2">
+                    <img id="heroLogo" src="{{ asset('images/logo-dprd.png') }}" alt="Logo DPRD" class="mt-4 w-48 h-auto enter-from-top enter-delay-2">
                 </div>
             </div>
-            
+
             <!-- Right Section - Content -->
-            <div id="panelRight" class="absolute top-0 left-[44vw] w-[56vw] h-[640px] bg-white rounded-bl-[120px] shadow-[0_12px_32px_rgba(0,0,0,0.06)] enter-hidden enter-delay-2">
-                
+            <div id="panelRight" class="absolute top-0 left-[44vw] w-[56vw] h-[640px] bg-white shadow-[0_12px_32px_rgba(0,0,0,0.06)]">
+
                 <!-- What is Online Guest Book Section -->
-                <div class="absolute top-[49px] left-[30px] right-[30px] text-textPrimary text-3xl md:text-4xl font-semibold text-left">
+                <div id="rightHeading" class="absolute top-[49px] left-[30px] right-[30px] text-textPrimary text-3xl md:text-3xl font-semibold text-left enter-from-bottom enter-delay-1">
                     Apa itu Buku Tamu Online?
                 </div>
-                
-                <div class="absolute top-[100px] left-[30px] right-[30px] text-textSecondary text-base font-normal text-left leading-8 md:leading-9">
+
+                <div id="rightDescription" class="absolute top-[100px] left-[30px] right-[30px] text-textSecondary text-base font-normal text-left leading-8 md:leading-9 enter-from-bottom enter-delay-2">
                     Buku tamu online adalah sebuah formulir digital yang digunakan untuk mencatat data atau informasi dari tamu
                     yang berkunjung ke suatu tempat, acara, atau platform secara elektronik melalui internet. Berbeda dengan
                     buku tamu konvensional yang berupa buku fisik, buku tamu online dapat diakses dan diisi menggunakan
                     komputer, tablet, atau smartphone.
                 </div>
-                
+
                 <!-- Step Cards (flex, centered) -->
-                <div id="steps" class="absolute top-[285px] left-[28px] right-[28px] flex justify-center items-stretch gap-10 enter-hidden enter-delay-3">
+                <div id="steps" class="absolute top-[285px] left-[28px] right-[28px] flex justify-center items-stretch gap-10 enter-from-bottom enter-delay-3">
                     <!-- Step 1 -->
-                    <div class="relative w-[189px] h-[287px] bg-primary rounded-xl shadow-md cursor-default transition-transform duration-200 filter hover:brightness-95 hover:scale-105 shrink-0">
+                    <div class="relative w-[189px] h-[287px] bg-primary shadow-md cursor-default rounded-xl transition-transform duration-200 filter hover:brightness-95 hover:scale-105 shrink-0">
                         <div class="flex flex-col items-center text-white px-6 pt-7">
                             <div class="text-5xl font-extrabold">01</div>
                             <div class="w-20 h-1 bg-white mt-3"></div>
@@ -82,7 +127,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Step 2 -->
                     <div class="relative w-[189px] h-[287px] bg-primary rounded-xl shadow-md cursor-default transition-transform duration-200 filter hover:brightness-95 hover:scale-105 shrink-0">
                         <div class="flex flex-col items-center text-white px-6 pt-7">
@@ -93,7 +138,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Step 3 -->
                     <div class="relative w-[189px] h-[287px] bg-primary rounded-xl shadow-md cursor-default transition-transform duration-200 filter hover:brightness-95 hover:scale-105 shrink-0">
                         <div class="flex flex-col items-center text-white px-6 pt-7">
@@ -106,9 +151,9 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Bottom Right Panel: Centered Content -->
-            <div id="bottomPanel" class="absolute top-[680px] left-[44vw] w-[56vw] flex flex-col items-center enter-hidden enter-delay-4">
+            <div id="bottomPanel" class="absolute top-[680px] left-[44vw] w-[56vw] flex flex-col items-center enter-from-bottom enter-delay-4">
                 <!-- Instructions Text -->
                 <div class="max-w-[680px] px-6 text-white text-base font-bold text-center leading-normal">
                     Silakan isi Buku Tamu Elektronik sebagai bagian dari proses kunjungan. Tekan tombol 'Daftar' di bawah
@@ -151,7 +196,7 @@
                     </a>
                 </div>
             </div>
-            
+
         </div>
     </div>
     <script>
@@ -161,22 +206,23 @@
                 if (fromIntro) {
                     // Clear flag for next navigations
                     sessionStorage.removeItem('introEnter');
-                    const ids = ['heroLeft','heroTitle','heroLogo','panelRight','steps','bottomPanel'];
+                    const ids = ['heroLeft', 'heroTitle', 'heroLogo', 'rightHeading', 'rightDescription', 'steps', 'bottomPanel'];
                     requestAnimationFrame(() => ids.forEach(id => {
                         const el = document.getElementById(id);
                         if (el) el.classList.add('enter-show');
                     }));
                 } else {
-                    // If not from intro, ensure elements are visible without animation
-                    const nodes = document.querySelectorAll('.enter-hidden');
-                    nodes.forEach(n => n.classList.add('enter-show'));
+                    // If not from intro, reveal with animation on next frame
+                    const nodes = document.querySelectorAll('.enter-hidden, .enter-from-top, .enter-from-bottom');
+                    requestAnimationFrame(() => nodes.forEach(n => n.classList.add('enter-show')));
                 }
             } catch (e) {
                 // Fallback: make everything visible
-                const nodes = document.querySelectorAll('.enter-hidden');
-                nodes.forEach(n => n.classList.add('enter-show'));
+                const nodes = document.querySelectorAll('.enter-hidden, .enter-from-top, .enter-from-bottom');
+                requestAnimationFrame(() => nodes.forEach(n => n.classList.add('enter-show')));
             }
         })();
     </script>
 </body>
+
 </html>
