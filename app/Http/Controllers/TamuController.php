@@ -161,4 +161,14 @@ class TamuController extends Controller
     {
         return response()->json($tamu);
     }
+
+    /**
+     * Menghapus data tamu dari database.
+     */
+    public function destroy(Tamu $tamu): RedirectResponse
+    {
+        $tamu->delete();
+
+        return redirect()->route('admin.daftar-tamu')->with('success', 'Data tamu berhasil dihapus.');
+    }
 }

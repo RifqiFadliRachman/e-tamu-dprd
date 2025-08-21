@@ -88,6 +88,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
     Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
 
+    Route::delete('/tamu/{tamu}', [TamuController::class, 'destroy'])->name('admin.tamu.destroy');
+
     Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
     Route::get('/surat/search', [SuratController::class, 'search'])->name('admin.surat.search');
     Route::delete('/surat/{tamu}', [SuratController::class, 'destroy'])->name('admin.surat.destroy');
