@@ -21,6 +21,8 @@ class Tamu extends Model
     'jenis_kunjungan',
     'jumlah_peserta',
     'status',
+    'keterangan',
+    'status_updated_at',
     'tanggal_kunjungan',
     'waktu_kunjungan',
     'tujuan_kunjungan',

@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Session;
+use Carbon\Carbon; // Import Carbon untuk menangani waktu
 
 class TamuController extends Controller
 {
@@ -26,7 +27,9 @@ class TamuController extends Controller
             'nomor_kontak' => $step3Data['nomor_kontak'] ?? 'Data tidak ada',
             'jenis_kunjungan' => $step2Data['jenis_kunjungan'] ?? 'Data tidak ada',
             'jumlah_peserta' => $step2Data['jumlah_peserta'] ?? 1,
-            'status' => 'belum_di_proses', // Status default saat data baru dibuat
+            'status' => 'belum_di_proses',
+            'keterangan' => null, // Inisialisasi keterangan
+            'status_updated_at' => null, // Inisialisasi timestamp
             'tanggal_kunjungan' => $step2Data['tanggal_kunjungan'] ?? null,
             'waktu_kunjungan' => $step2Data['waktu_kunjungan'] ?? null,
             'tujuan_kunjungan' => $step2Data['topik_kunjungan'] ?? 'Tujuan tidak diisi',
@@ -95,7 +98,6 @@ class TamuController extends Controller
     {
         $query = Tamu::query();
 
-        // Logika Filter
         if ($request->has('filter') && $request->filter != 'semua') {
             $filterValue = $request->filter;
             if ($filterValue === 'lainnya') {
@@ -105,7 +107,6 @@ class TamuController extends Controller
             }
         }
 
-        // Logika Pencarian
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -127,7 +128,6 @@ class TamuController extends Controller
     {
         $query = Tamu::query();
 
-        // Logika Filter
         if ($request->has('filter') && $request->filter != 'semua') {
             $filterValue = $request->filter;
             if ($filterValue === 'lainnya') {
@@ -137,7 +137,6 @@ class TamuController extends Controller
             }
         }
 
-        // Logika Pencarian
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -179,8 +178,26 @@ class TamuController extends Controller
             'status' => 'required|string|in:belum_di_proses,di_proses,di_terima,di_tolak',
         ]);
 
-        $tamu->update(['status' => $request->status]);
+        // Menyimpan data status dan waktu perubahannya
+        $tamu->update([
+            'status' => $request->status,
+            'status_updated_at' => Carbon::now() // Menggunakan waktu saat ini
+        ]);
 
         return redirect()->route('admin.daftar-tamu')->with('success', 'Status tamu berhasil diperbarui.');
+    }
+
+    /**
+     * Mengupdate keterangan tamu.
+     */
+    public function updateKeterangan(Request $request, Tamu $tamu): RedirectResponse
+    {
+        $request->validate([
+            'keterangan' => 'nullable|string|max:255',
+        ]);
+
+        $tamu->update(['keterangan' => $request->keterangan]);
+
+        return back()->with('success', 'Keterangan berhasil disimpan.');
     }
 }

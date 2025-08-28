@@ -95,7 +95,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/daftar-tamu/search', [TamuController::class, 'searchDaftarTamu'])->name('admin.daftar-tamu.search');
     
     Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
-    Route::put('/tamu/{tamu}/status', [TamuController::class, 'updateStatus'])->name('admin.tamu.updateStatus'); // RUTE YANG DIPERLUKAN
+    Route::delete('/tamu/{tamu}', [TamuController::class, 'destroy'])->name('admin.tamu.destroy'); // RUTE HAPUS TAMU
+    Route::put('/tamu/{tamu}/status', [TamuController::class, 'updateStatus'])->name('admin.tamu.updateStatus');
+    Route::put('/tamu/{tamu}/keterangan', [TamuController::class, 'updateKeterangan'])->name('admin.tamu.updateKeterangan');
 
     Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
     Route::get('/surat/search', [SuratController::class, 'search'])->name('admin.surat.search');

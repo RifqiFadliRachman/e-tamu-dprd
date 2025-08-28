@@ -27,6 +27,27 @@
                 alert('Tidak dapat memuat detail tamu.');
             }
         },
+        printDocument(url) {
+            if (!url) return;
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'absolute';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = '0';
+            iframe.src = url;
+            document.body.appendChild(iframe);
+            iframe.onload = function() {
+                try {
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                } catch (e) {
+                    window.open(url, '_blank');
+                }
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 1000);
+            };
+        },
         formatJenisKunjungan(jenis) {
             if (!jenis) return '-';
             return jenis.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
@@ -34,6 +55,11 @@
         formatStatus(status) {
             if (!status) return 'Belum Di Proses';
             return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        },
+        formatDateTime(dateTimeString) {
+            if (!dateTimeString) return '-';
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' };
+            return new Date(dateTimeString).toLocaleString('id-ID', options) + ' WIB';
         },
         formatDate(dateString) {
             if (!dateString) return '-';
@@ -43,6 +69,10 @@
         formatTime(timeString) {
             if (!timeString) return '-';
             return `${timeString} WIB`;
+        },
+        getFileName(path) {
+            if (!path) return '';
+            return path.split('/').pop();
         }
      }">
         <div class="flex h-screen">
@@ -77,14 +107,12 @@
 
             <div class="flex-1 flex flex-col">
                 
-                {{-- Menggunakan file partial header --}}
                 @include('admin.partials._header', [
                     'headerContent' => view('admin.partials._header-content-daftartamu')
                 ])
 
                 <main class="p-6 overflow-y-auto">
                     
-                    <!-- ===== NOTIFIKASI SUKSES (TAMBAHAN) ===== -->
                     @if (session('success'))
                         <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
                             <span class="block sm:inline">{{ session('success') }}</span>
@@ -93,9 +121,7 @@
                             </span>
                         </div>
                     @endif
-                    <!-- ===== BATAS NOTIFIKASI ===== -->
 
-                    <!-- Tabs -->
                     <div class="mb-4 border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                             <a href="{{ route('admin.daftar-tamu', ['filter' => 'semua']) }}" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm 
@@ -117,7 +143,6 @@
                         </nav>
                     </div>
 
-                    <!-- Search -->
                     <div class="mb-4">
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -134,7 +159,6 @@
                         </div>
                     </div>
 
-                    <!-- Table and Pagination Container -->
                     <div id="tableContainer">
                         @include('admin.partials.daftar-tamu-content', ['daftarTamu' => $daftarTamu])
                     </div>
@@ -191,9 +215,50 @@
                         <label class="text-sm font-semibold text-gray-500">Status</label>
                         <p x-text="formatStatus(detailTamu.status)" class="mt-1 p-3 border rounded-md bg-gray-50 w-full"></p>
                     </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-500">Tanggal Status Diubah</label>
+                        <p x-text="formatDateTime(detailTamu.status_updated_at)" class="mt-1 p-3 border rounded-md bg-gray-50 w-full"></p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-500">Keterangan</label>
+                        <p x-text="detailTamu.keterangan || '-'" class="mt-1 p-3 border rounded-md bg-gray-50 w-full min-h-[48px]"></p>
+                    </div>
+                    <!-- Keterangan Surat Permohonan -->
+                    <div>
+                        <label class="text-sm font-semibold text-gray-500">Surat Permohonan Kunjungan</label>
+                        <div class="mt-1 p-3 border rounded-md bg-gray-50 w-full min-h-[48px] flex justify-between items-center">
+                            <template x-if="detailTamu.surat_permohonan_path">
+                                <div class="flex-1">
+                                    <a :href="'/storage/' + detailTamu.surat_permohonan_path" target="_blank" class="text-blue-600 hover:underline truncate" x-text="getFileName(detailTamu.surat_permohonan_path)"></a>
+                                </div>
+                                <button @click="printDocument('/storage/' + detailTamu.surat_permohonan_path)" class="ml-4 px-3 py-1 bg-gray-200 text-gray-700 text-xs font-semibold rounded hover:bg-gray-300 flex-shrink-0">
+                                    Print
+                                </button>
+                            </template>
+                            <template x-if="!detailTamu.surat_permohonan_path">
+                                <span class="text-gray-500">-</span>
+                            </template>
+                        </div>
+                    </div>
+                    <!-- Keterangan Surat Tugas -->
+                    <div>
+                        <label class="text-sm font-semibold text-gray-500">Surat Tugas Perintah</label>
+                        <div class="mt-1 p-3 border rounded-md bg-gray-50 w-full min-h-[48px] flex justify-between items-center">
+                            <template x-if="detailTamu.surat_tugas_path">
+                                <div class="flex-1">
+                                    <a :href="'/storage/' + detailTamu.surat_tugas_path" target="_blank" class="text-blue-600 hover:underline truncate" x-text="getFileName(detailTamu.surat_tugas_path)"></a>
+                                </div>
+                                <button @click="printDocument('/storage/' + detailTamu.surat_tugas_path)" class="ml-4 px-3 py-1 bg-gray-200 text-gray-700 text-xs font-semibold rounded hover:bg-gray-300 flex-shrink-0">
+                                    Print
+                                </button>
+                            </template>
+                            <template x-if="!detailTamu.surat_tugas_path">
+                                <span class="text-gray-500">-</span>
+                            </template>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Action Buttons -->
                 <div class="p-4 bg-gray-50 border-t flex justify-end items-center gap-x-3">
                     <button @click="showModal = false" type="button" class="px-5 py-2 border rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
                         Tutup
@@ -217,7 +282,6 @@
             const tableContainer = document.getElementById('tableContainer');
             let searchTimeout;
 
-            // Fungsi untuk mengambil data
             const fetchData = async (url) => {
                 tableContainer.style.opacity = '0.5';
                 try {
@@ -235,7 +299,6 @@
                 }
             };
 
-            // Fungsi untuk membangun URL dan memanggil fetchData
             const performSearch = (page = 1) => {
                 const urlParams = new URLSearchParams(window.location.search);
                 const filter = urlParams.get('filter') || 'semua';
@@ -249,13 +312,11 @@
                 fetchData(searchUrl.toString());
             };
 
-            // Event listener untuk input pencarian
             searchInput.addEventListener('input', () => {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => performSearch(1), 300);
             });
 
-            // Event listener untuk paginasi menggunakan event delegation
             tableContainer.addEventListener('click', (event) => {
                 const link = event.target.closest('a.page-link'); 
                 if (link && link.href) {
