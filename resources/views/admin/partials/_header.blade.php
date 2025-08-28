@@ -29,11 +29,15 @@
                  x-transition:leave-end="opacity-0 transform -translate-y-2" 
                  class="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-lg border z-50"
                  style="display: none;">
-
+                
                 <div class="p-4 border-b flex justify-between items-center">
-                    <h3 class="font-bold text-gray-800">Notifikasi</h3>
-                    <a href="#" class="text-sm text-blue-600 hover:underline">Tandai sudah dibaca</a>
-                </div>
+    <h3 class="font-bold text-gray-800">Notifikasi</h3>
+    <form action="{{ route('notifications.markAllRead') }}" method="POST" class="d-inline">
+        @csrf
+        <button type="submit" class="text-sm text-blue-600 hover:underline">Tandai sudah dibaca</button>
+    </form>
+</div>
+
 
                 <div class="divide-y max-h-96 overflow-y-auto">
                     @forelse ($notifications as $notification)
@@ -59,9 +63,9 @@
                         </div>
                     @endforelse
                 </div>
-                
+
                 <div class="p-2 border-t text-center">
-                     <a href="#" class="text-sm text-blue-600 hover:underline">Lihat semua notifikasi</a>
+                    <!-- Optional Footer Section (If Needed) -->
                 </div>
             </div>
         </div>
