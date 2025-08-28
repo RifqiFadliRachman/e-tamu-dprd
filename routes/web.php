@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TamuController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuratController;
-use App\Http\Controllers\NotificationController; // Ditambahkan
+use App\Http\Controllers\NotificationController;
 
 /*
 |----------------------------------------------------------------------
@@ -95,6 +95,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/daftar-tamu/search', [TamuController::class, 'searchDaftarTamu'])->name('admin.daftar-tamu.search');
     
     Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
+    Route::put('/tamu/{tamu}/status', [TamuController::class, 'updateStatus'])->name('admin.tamu.updateStatus'); // RUTE YANG DIPERLUKAN
 
     Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
     Route::get('/surat/search', [SuratController::class, 'search'])->name('admin.surat.search');
@@ -102,7 +103,6 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     // Rute untuk manajemen admin
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.admin');
-    // RUTE BARU UNTUK LIVE SEARCH ADMIN
     Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.admin.search');
     Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
     Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
@@ -110,7 +110,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::put('/admin/{user}', [AdminController::class, 'update'])->name('admin.update');
     Route::delete('/admin/{user}', [AdminController::class, 'destroy'])->name('admin.destroy');
 
-    // RUTE UNTUK NOTIFIKASI (DITAMBAHKAN)
+    // RUTE UNTUK NOTIFIKASI
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
 });

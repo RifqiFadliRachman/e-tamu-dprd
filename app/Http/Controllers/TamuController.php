@@ -26,6 +26,7 @@ class TamuController extends Controller
             'nomor_kontak' => $step3Data['nomor_kontak'] ?? 'Data tidak ada',
             'jenis_kunjungan' => $step2Data['jenis_kunjungan'] ?? 'Data tidak ada',
             'jumlah_peserta' => $step2Data['jumlah_peserta'] ?? 1,
+            'status' => 'belum_di_proses', // Status default saat data baru dibuat
             'tanggal_kunjungan' => $step2Data['tanggal_kunjungan'] ?? null,
             'waktu_kunjungan' => $step2Data['waktu_kunjungan'] ?? null,
             'tujuan_kunjungan' => $step2Data['topik_kunjungan'] ?? 'Tujuan tidak diisi',
@@ -89,14 +90,12 @@ class TamuController extends Controller
 
     /**
      * Menampilkan halaman Daftar Tamu (Pemuatan Awal).
-     * Metode ini akan mengambil data menggunakan logika yang sama dengan pencarian
-     * dan merender view lengkap.
      */
     public function showDaftarTamu(Request $request): View
     {
         $query = Tamu::query();
 
-        // Logika Filter (DIKEMBALIKAN)
+        // Logika Filter
         if ($request->has('filter') && $request->filter != 'semua') {
             $filterValue = $request->filter;
             if ($filterValue === 'lainnya') {
@@ -106,7 +105,7 @@ class TamuController extends Controller
             }
         }
 
-        // Logika Pencarian (jika ada parameter search di URL awal)
+        // Logika Pencarian
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
@@ -123,7 +122,6 @@ class TamuController extends Controller
     
     /**
      * Menangani permintaan pencarian live untuk halaman daftar tamu (AJAX).
-     * Metode ini HANYA akan mengembalikan view parsial.
      */
     public function searchDaftarTamu(Request $request): View
     {
@@ -170,5 +168,19 @@ class TamuController extends Controller
         $tamu->delete();
 
         return redirect()->route('admin.daftar-tamu')->with('success', 'Data tamu berhasil dihapus.');
+    }
+
+    /**
+     * Mengupdate status tamu.
+     */
+    public function updateStatus(Request $request, Tamu $tamu): RedirectResponse
+    {
+        $request->validate([
+            'status' => 'required|string|in:belum_di_proses,di_proses,di_terima,di_tolak',
+        ]);
+
+        $tamu->update(['status' => $request->status]);
+
+        return redirect()->route('admin.daftar-tamu')->with('success', 'Status tamu berhasil diperbarui.');
     }
 }

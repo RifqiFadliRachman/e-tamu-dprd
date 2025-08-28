@@ -31,6 +31,10 @@
             if (!jenis) return '-';
             return jenis.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
         },
+        formatStatus(status) {
+            if (!status) return 'Belum Di Proses';
+            return status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        },
         formatDate(dateString) {
             if (!dateString) return '-';
             const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Jakarta' };
@@ -182,6 +186,10 @@
                     <div>
                         <label class="text-sm font-semibold text-gray-500">Jumlah Tamu</label>
                         <p x-text="detailTamu.jumlah_peserta || '-'" class="mt-1 p-3 border rounded-md bg-gray-50 w-full"></p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-semibold text-gray-500">Status</label>
+                        <p x-text="formatStatus(detailTamu.status)" class="mt-1 p-3 border rounded-md bg-gray-50 w-full"></p>
                     </div>
                 </div>
                 
