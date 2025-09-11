@@ -1,10 +1,12 @@
 @if ($paginator->hasPages())
-    <nav class="flex items-center space-x-2">
+    {{-- Tambahkan class "pagination" di sini --}}
+    <nav class="pagination flex items-center space-x-2">
         {{-- Previous Page Link --}}
         @if ($paginator->onFirstPage())
             <span class="px-3 py-1 border rounded text-gray-400 cursor-not-allowed">«</span>
         @else
-            <a href="{{ $paginator->previousPageUrl() }}" class="px-3 py-1 border rounded hover:bg-gray-100">«</a>
+            {{-- Tambahkan class "page-link" di sini --}}
+            <a href="{{ $paginator->previousPageUrl() }}" class="page-link px-3 py-1 border rounded hover:bg-gray-100">«</a>
         @endif
 
         {{-- Page Numbers --}}
@@ -18,7 +20,8 @@
                     @if ($page == $paginator->currentPage())
                         <span class="px-3 py-1 border rounded bg-[#E8BF6F] text-white">{{ $page }}</span>
                     @else
-                        <a href="{{ $url }}" class="px-3 py-1 border rounded hover:bg-gray-100">{{ $page }}</a>
+                        {{-- Tambahkan class "page-link" di sini --}}
+                        <a href="{{ $url }}" class="page-link px-3 py-1 border rounded hover:bg-gray-100">{{ $page }}</a>
                     @endif
                 @endforeach
             @endif
@@ -26,7 +29,8 @@
 
         {{-- Next Page Link --}}
         @if ($paginator->hasMorePages())
-            <a href="{{ $paginator->nextPageUrl() }}" class="px-3 py-1 border rounded hover:bg-gray-100">»</a>
+            {{-- Tambahkan class "page-link" di sini --}}
+            <a href="{{ $paginator->nextPageUrl() }}" class="page-link px-3 py-1 border rounded hover:bg-gray-100">»</a>
         @else
             <span class="px-3 py-1 border rounded text-gray-400 cursor-not-allowed">»</span>
         @endif

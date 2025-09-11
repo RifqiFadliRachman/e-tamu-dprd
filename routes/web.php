@@ -4,11 +4,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\TamuController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SuratController;
+use App\Http\Controllers\NotificationController;
 
 /*
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------
 | Web Routes
-|--------------------------------------------------------------------------
+|----------------------------------------------------------------------
 */
 
 // ==========================================================================
@@ -46,8 +49,15 @@ Route::post('/detail-kunjungan', function (Request $request) {
     ]);
     $sessionData = $request->except(['_token', 'surat_pemberitahuan', 'surat_tugas']);
     session(['step2_data' => array_merge($request->session()->get('step2_data', []), $sessionData)]);
-    if ($request->hasFile('surat_pemberitahuan')) { session(['surat_pemberitahuan_path' => $request->file('surat_pemberitahuan')->store('documents', 'public')]); }
-    if ($request->hasFile('surat_tugas')) { session(['surat_tugas_path' => $request->file('surat_tugas')->store('documents', 'public')]); }
+
+    if ($request->hasFile('surat_pemberitahuan')) {
+        session(['surat_pemberitahuan_path' => $request->file('surat_pemberitahuan')->store('documents', 'public')]);
+    }
+
+    if ($request->hasFile('surat_tugas')) {
+        session(['surat_tugas_path' => $request->file('surat_tugas')->store('documents', 'public')]);
+    }
+
     return redirect()->route('form.tamu');
 })->name('detail.kunjungan.store');
 
@@ -63,7 +73,6 @@ Route::post('/form-tamu', function (Request $request) {
 })->name('form.tamu.store');
 
 Route::get('/konfirmasi', fn(Request $request) => view('konfirmasi', ['step2Data' => $request->session()->get('step2_data', []), 'step3Data' => $request->session()->get('step3_data', [])]))->name('konfirmasi');
-// PERUBAHAN PENTING: Rute ini sekarang memanggil TamuController@store
 Route::post('/konfirmasi', [TamuController::class, 'store'])->name('konfirmasi.store');
 
 Route::get('/sukses', fn() => view('success'))->name('sukses');
@@ -80,12 +89,30 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 // ==========================================================
 Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/dashboard', [TamuController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/daftar-tamu', fn() => view('admin.daftar-tamu'))->name('admin.daftar-tamu');
-    Route::get('/surat', fn() => view('admin.surat'))->name('admin.surat');
-    Route::get('/admin', fn() => view('admin.admin'))->name('admin.admin');
-
     Route::get('/daftar-tamu', [TamuController::class, 'showDaftarTamu'])->name('admin.daftar-tamu');
+    
+    Route::get('/tamu/search', [TamuController::class, 'search'])->name('admin.tamu.search');
+    Route::get('/daftar-tamu/search', [TamuController::class, 'searchDaftarTamu'])->name('admin.daftar-tamu.search');
+    
+    Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
+    Route::delete('/tamu/{tamu}', [TamuController::class, 'destroy'])->name('admin.tamu.destroy'); // RUTE HAPUS TAMU
+    Route::put('/tamu/{tamu}/status', [TamuController::class, 'updateStatus'])->name('admin.tamu.updateStatus');
+    Route::put('/tamu/{tamu}/keterangan', [TamuController::class, 'updateKeterangan'])->name('admin.tamu.updateKeterangan');
 
-    Route::get('/surat', fn() => view('admin.surat'))->name('admin.surat');
-    Route::get('/admin', fn() => view('admin.admin'))->name('admin.admin');
+    Route::get('/surat', [SuratController::class, 'index'])->name('admin.surat');
+    Route::get('/surat/search', [SuratController::class, 'search'])->name('admin.surat.search');
+    Route::delete('/surat/{tamu}', [SuratController::class, 'destroy'])->name('admin.surat.destroy');
+
+    // Rute untuk manajemen admin
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.admin');
+    Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.admin.search');
+    Route::get('/admin/create', [AdminController::class, 'create'])->name('admin.create');
+    Route::post('/admin', [AdminController::class, 'store'])->name('admin.store');
+    Route::get('/admin/{user}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::put('/admin/{user}', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/admin/{user}', [AdminController::class, 'destroy'])->name('admin.destroy');
+
+    // RUTE UNTUK NOTIFIKASI
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllRead');
 });
