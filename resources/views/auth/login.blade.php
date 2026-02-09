@@ -35,14 +35,11 @@
                 @enderror
             </div>
             
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center mb-6">
                 <label for="remember_me" class="flex items-center text-sm text-gray-600">
                     <input id="remember_me" type="checkbox" name="remember" class="w-4 h-4 text-[#E8BF6F] bg-gray-100 border-gray-300 rounded focus:ring-[#E8BF6F]">
                     <span class="ml-2">Ingat Saya</span>
                 </label>
-                <a href="#" class="inline-block align-baseline text-sm text-gray-600 hover:text-gray-900">
-                    Lupa Password?
-                </a>
             </div>
 
             <div class="flex items-center justify-between">
