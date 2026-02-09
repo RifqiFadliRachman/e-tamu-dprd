@@ -109,9 +109,14 @@ class AdminController extends Controller
      */
     public function destroy(User $user)
     {
-        // Mencegah user menghapus akunnya sendiri
+        // 1. Mencegah user menghapus akunnya sendiri
         if ($user->id === auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        // 2. Mencegah penghapusan akun admin utama (Super Admin)
+        if ($user->email === 'admin@dprd.test') {
+            return back()->with('error', 'Akun admin utama tidak dapat dihapus oleh siapa pun.');
         }
 
         $user->delete();
