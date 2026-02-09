@@ -9,9 +9,9 @@ use App\Http\Controllers\SuratController;
 use App\Http\Controllers\NotificationController;
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | Web Routes
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 
 // ==========================================================================
@@ -32,47 +32,20 @@ Route::post('/skip-intro', function (Request $request) {
 
 Route::get('/home', fn() => view('index'))->name('home');
 
-Route::get('/jadwal-kunjungan', fn() => view('schedule'))->name('jadwal.kunjungan');
-Route::post('/jadwal-kunjungan', function (Request $request) {
-    $validated = $request->validate(['tanggal_kunjungan' => 'required|date', 'waktu_kunjungan' => 'required|string']);
-    $request->session()->put('step2_data', $validated);
-    return redirect()->route('detail.kunjungan');
-})->name('jadwal.kunjungan.store');
+// Tahap 1: Jadwal Kunjungan
+Route::get('/jadwal-kunjungan', [TamuController::class, 'showJadwal'])->name('jadwal.kunjungan');
+Route::post('/jadwal-kunjungan', [TamuController::class, 'submitJadwal'])->name('jadwal.kunjungan.store');
 
-Route::get('/detail-kunjungan', fn(Request $request) => view('details', ['step2Data' => $request->session()->get('step2_data', [])]))->name('detail.kunjungan');
-Route::post('/detail-kunjungan', function (Request $request) {
-    $validated = $request->validate([
-        'jenis_kunjungan' => 'required|string', 'topik_kunjungan' => 'required|string|max:255',
-        'jumlah_peserta' => 'required|integer|min:1', 'surat_pemberitahuan' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        'surat_tugas' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048', 'tanggal_kunjungan' => 'required|date',
-        'waktu_kunjungan' => 'required|string',
-    ]);
-    $sessionData = $request->except(['_token', 'surat_pemberitahuan', 'surat_tugas']);
-    session(['step2_data' => array_merge($request->session()->get('step2_data', []), $sessionData)]);
+// Tahap 2: Detail Kunjungan
+Route::get('/detail-kunjungan', [TamuController::class, 'showDetailKunjungan'])->name('detail.kunjungan');
+Route::post('/detail-kunjungan', [TamuController::class, 'submitDetailKunjungan'])->name('detail.kunjungan.store');
 
-    if ($request->hasFile('surat_pemberitahuan')) {
-        session(['surat_pemberitahuan_path' => $request->file('surat_pemberitahuan')->store('documents', 'public')]);
-    }
+// Tahap 3: Formulir Instansi/Tamu
+Route::get('/form-tamu', [TamuController::class, 'showFormTamu'])->name('form.tamu');
+Route::post('/form-tamu', [TamuController::class, 'submitFormTamu'])->name('form.tamu.store');
 
-    if ($request->hasFile('surat_tugas')) {
-        session(['surat_tugas_path' => $request->file('surat_tugas')->store('documents', 'public')]);
-    }
-
-    return redirect()->route('form.tamu');
-})->name('detail.kunjungan.store');
-
-Route::get('/form-tamu', fn(Request $request) => view('form', ['step3Data' => $request->session()->get('step3_data', [])]))->name('form.tamu');
-Route::post('/form-tamu', function (Request $request) {
-    $validated = $request->validate([
-        'nama_penanggung_jawab' => 'required|string|max:255', 'posisi_jabatan' => 'required|string',
-        'nomor_kontak' => 'required|string|regex:/^[0-9]{10,15}$/', 'nama_fraksi_komisi' => 'required|string',
-        'alamat_instansi' => 'required|string|max:500',
-    ]);
-    session(['step3_data' => $validated]);
-    return redirect()->route('konfirmasi');
-})->name('form.tamu.store');
-
-Route::get('/konfirmasi', fn(Request $request) => view('konfirmasi', ['step2Data' => $request->session()->get('step2_data', []), 'step3Data' => $request->session()->get('step3_data', [])]))->name('konfirmasi');
+// Tahap 4: Konfirmasi & Simpan
+Route::get('/konfirmasi', [TamuController::class, 'showKonfirmasi'])->name('konfirmasi');
 Route::post('/konfirmasi', [TamuController::class, 'store'])->name('konfirmasi.store');
 
 Route::get('/sukses', fn() => view('success'))->name('sukses');
@@ -95,7 +68,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/daftar-tamu/search', [TamuController::class, 'searchDaftarTamu'])->name('admin.daftar-tamu.search');
     
     Route::get('/tamu/{tamu}', [TamuController::class, 'showDetail'])->name('admin.tamu.detail');
-    Route::delete('/tamu/{tamu}', [TamuController::class, 'destroy'])->name('admin.tamu.destroy'); // RUTE HAPUS TAMU
+    Route::delete('/tamu/{tamu}', [TamuController::class, 'destroy'])->name('admin.tamu.destroy');
     Route::put('/tamu/{tamu}/status', [TamuController::class, 'updateStatus'])->name('admin.tamu.updateStatus');
     Route::put('/tamu/{tamu}/keterangan', [TamuController::class, 'updateKeterangan'])->name('admin.tamu.updateKeterangan');
 
