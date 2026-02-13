@@ -26,8 +26,8 @@
     </script>
     <style>
         @media print {
-            body { 
-                -webkit-print-color-adjust: exact; 
+            body {
+                -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
                 font-family: 'Times New Roman', serif;
                 font-size: 12pt;
@@ -38,10 +38,10 @@
             }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .print-container { 
-                padding: 0 !important; 
-                margin: 0 !important; 
-                max-width: 100% !important; 
+            .print-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
                 width: 100%;
                 background: white;
             }
@@ -105,12 +105,11 @@
     </style>
 </head>
 <body class="bg-white min-h-screen font-poppins flex justify-center items-start">
-    <div class="w-full max-w-[1440px] mx-auto px-8 sm:px-16 py-10 print-container">
+    <div class="w-full max-w-[1440px] mx-auto px-4 sm:px-8 md:px-16 py-6 sm:py-10 print-container">
 
         <!-- Header Kop Surat untuk Print -->
         <div class="print-only print-header">
             <div class="flex justify-center items-center mb-4">
-                <!-- Logo DPRD Asli -->
                 <div class="print-logo flex items-center justify-center">
                     <img src="{{ asset('images/logo-dprd.png') }}" alt="Logo DPRD" style="max-width:80px;max-height:80px;object-fit:contain;image-rendering:auto;" />
                 </div>
@@ -122,90 +121,88 @@
         </div>
 
         <!-- Header Normal untuk Screen -->
-        <header class="flex justify-between items-start no-print">
+        <header class="flex flex-col sm:flex-row justify-between items-start gap-2 no-print">
             <div>
-                <p class="text-primary text-2xl font-semibold">TAHAP 4</p>
-                <h1 class="font-bold text-black text-[32px]">Konfirmasi</h1>
+                <p class="text-primary text-lg sm:text-xl md:text-2xl font-semibold">TAHAP 4</p>
+                <h1 class="font-bold text-black text-2xl sm:text-[28px] md:text-[32px]">Konfirmasi</h1>
             </div>
-            <a href="{{ route('home') }}">
-    <button type="button" class="bg-primary hover:bg-primaryDark p-3 rounded-xl transition-colors" aria-label="Tutup formulir">
-        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-    </button>
-</a>
+            <a href="{{ route('home') }}" class="flex-shrink-0 sm:mt-0 self-end sm:self-start">
+                <button type="button" class="bg-primary hover:bg-primaryDark p-2 sm:p-3 rounded-xl transition-colors" aria-label="Tutup formulir">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </a>
         </header>
 
         <!-- Progress Steps -->
-        <div class="w-full flex justify-center items-center my-12 no-print">
-            <div class="flex justify-center items-center w-full gap-x-16 sm:gap-x-20">
-                <div class="w-4 h-4 bg-primary rounded-full"></div>
-                <div class="w-4 h-4 bg-primary rounded-full"></div>
-                <div class="w-4 h-4 bg-primary rounded-full"></div>
-                <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center text-white text-xl font-bold font-inter z-10">4</div>
-                <div class="w-4 h-4 bg-primary rounded-full"></div>
+        <div class="w-full flex justify-center items-center my-8 sm:my-10 md:my-12 no-print">
+            <div class="flex justify-center items-center gap-4 sm:gap-8 md:gap-12 lg:gap-16">
+                <div class="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-primary rounded-full"></div>
+                <div class="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-primary rounded-full"></div>
+                <div class="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-primary rounded-full"></div>
+                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-primary rounded-full flex items-center justify-center text-white text-lg sm:text-xl font-bold font-inter z-10">4</div>
+                <div class="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-primary rounded-full"></div>
             </div>
         </div>
 
-        <!-- Info Bar (Dynamic) -->
-    <div class="flex justify-between items-start mb-10 no-print">
-            <div class="text-primary text-base font-semibold">
+        <!-- Info Bar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-8 sm:mb-10 no-print">
+            <div class="text-primary text-sm sm:text-base font-semibold">
                 @php
                     $tgl = $step2Data['tanggal_kunjungan'] ?? null;
                 @endphp
                 Tanggal: {{ $tgl ? \Carbon\Carbon::parse($tgl)->isoFormat('D MMMM YYYY') : '-' }}
             </div>
-            <div class="flex flex-col items-end">
-                <div class="text-primary text-base font-semibold">
-                    Waktu: 
-                    @php $wk = $step2Data['waktu_kunjungan'] ?? null; @endphp
-                    {{ $wk ? ($wk . ' WIB') : '-' }}
-                </div>
+            <div class="text-primary text-sm sm:text-base font-semibold">
+                Waktu:
+                @php $wk = $step2Data['waktu_kunjungan'] ?? null; @endphp
+                {{ $wk ? ($wk . ' WIB') : '-' }}
             </div>
         </div>
-        
+
         <!-- Konten Utama -->
-        <main class="grid grid-cols-1 gap-y-12 print-main">
+        <main class="grid grid-cols-1 gap-y-10 sm:gap-y-12 print-main">
             <!-- Bagian Data Penanggung Jawab -->
             <section>
-                <div class="no-print flex items-center justify-between mb-8">
-                    <h2 class="text-primary text-2xl font-bold">Data Penanggung Jawab</h2>
+                <div class="no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                    <h2 class="text-primary text-xl sm:text-2xl font-bold">Data Penanggung Jawab</h2>
                     <button
                         onclick="window.print()"
                         type="button"
                         aria-label="Cetak Data"
                         class="group flex items-center gap-x-0 group-hover:gap-x-8 text-textPrimary hover:text-primary transition-all duration-200 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white select-none"
                     >
-                        <div class="w-[50px] h-[50px] bg-primary rounded-[10px] flex items-center justify-center transition-all duration-200 group-hover:bg-primaryDark shadow-sm group-hover:shadow-lg transform-gpu group-hover:-translate-y-0.5 group-hover:scale-[1.05]">
-                            <svg class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" fill="white" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+                        <div class="w-[42px] h-[42px] sm:w-[50px] sm:h-[50px] bg-primary rounded-[10px] flex items-center justify-center transition-all duration-200 group-hover:bg-primaryDark shadow-sm group-hover:shadow-lg transform-gpu group-hover:-translate-y-0.5 group-hover:scale-[1.05]">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-200 group-hover:scale-110" fill="white" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
                         </div>
-                        <span class="text-base font-semibold whitespace-nowrap overflow-hidden max-w-0 opacity-0 ml-0 transition-all duration-300 ease-out delay-0 group-hover:delay-200 group-hover:max-w-[160px] group-hover:opacity-100 group-hover:ml-5">Cetak Data</span>
+                        <span class="text-sm sm:text-base font-semibold whitespace-nowrap overflow-hidden max-w-0 opacity-0 ml-0 transition-all duration-300 ease-out delay-0 group-hover:delay-200 group-hover:max-w-[160px] group-hover:opacity-100 group-hover:ml-4 sm:group-hover:ml-5">Cetak Data</span>
                     </button>
                 </div>
                 <div class="section-title print-only">Data Penanggung Jawab</div>
-                
+
                 <!-- Format Screen -->
-                <div class="space-y-6 no-print">
+                <div class="space-y-4 sm:space-y-6 no-print">
                     <div>
-                        <p class="text-black text-base font-semibold">Nama Penanggung Jawab</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step3Data['nama_penanggung_jawab'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Nama Penanggung Jawab</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step3Data['nama_penanggung_jawab'] ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Asal Instansi</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step3Data['nama_fraksi_komisi'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Asal Instansi</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step3Data['nama_fraksi_komisi'] ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Alamat Lengkap Instansi</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step3Data['alamat_instansi'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Alamat Lengkap Instansi</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step3Data['alamat_instansi'] ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Posisi/Jabatan</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step3Data['posisi_jabatan'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Posisi/Jabatan</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step3Data['posisi_jabatan'] ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Nomor Kontak Aktif (Whatsapp)</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step3Data['nomor_kontak'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Nomor Kontak Aktif (Whatsapp)</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step3Data['nomor_kontak'] ?? '-' }}</p>
                     </div>
                 </div>
 
@@ -241,28 +238,28 @@
 
             <!-- Bagian Info Kunjungan -->
             <section>
-                <h2 class="text-primary text-2xl font-bold mb-8 no-print">Info Kunjungan</h2>
+                <h2 class="text-primary text-xl sm:text-2xl font-bold mb-6 sm:mb-8 no-print">Info Kunjungan</h2>
                 <div class="section-title print-only">Info Kunjungan</div>
-                
+
                 <!-- Format Screen -->
-                <div class="space-y-6 no-print">
+                <div class="space-y-4 sm:space-y-6 no-print">
                     <div>
-                        <p class="text-black text-base font-semibold">Tanggal Kunjungan</p>
-                        <p class="text-black text-base font-normal mt-1">
+                        <p class="text-black text-sm sm:text-base font-semibold">Tanggal Kunjungan</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">
                             @php $tgl = $step2Data['tanggal_kunjungan'] ?? null; @endphp
                             {{ $tgl ? \Carbon\Carbon::parse($tgl)->isoFormat('D MMMM YYYY') : '-' }}
                         </p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Waktu Kunjungan</p>
-                        <p class="text-black text-base font-normal mt-1">
+                        <p class="text-black text-sm sm:text-base font-semibold">Waktu Kunjungan</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">
                             @php $wk = $step2Data['waktu_kunjungan'] ?? null; @endphp
                             {{ $wk ? ($wk . ' WIB') : '-' }}
                         </p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Tipe Kunjungan</p>
-                        <p class="text-black text-base font-normal mt-1">
+                        <p class="text-black text-sm sm:text-base font-semibold">Tipe Kunjungan</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">
                             @php
                                 $jenisRaw = $step2Data['jenis_kunjungan'] ?? null;
                                 $mapJenis = [
@@ -276,20 +273,20 @@
                         </p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Tujuan Kunjungan</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step2Data['topik_kunjungan'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Tujuan Kunjungan</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step2Data['topik_kunjungan'] ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-black text-base font-semibold">Jumlah Tamu</p>
-                        <p class="text-black text-base font-normal mt-1">{{ $step2Data['jumlah_peserta'] ?? '-' }}</p>
+                        <p class="text-black text-sm sm:text-base font-semibold">Jumlah Tamu</p>
+                        <p class="text-black text-sm sm:text-base font-normal mt-1">{{ $step2Data['jumlah_peserta'] ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-textPrimary text-base font-semibold">Surat Permohonan Kunjungan</p>
-                        <p class="text-textPrimary text-base font-normal mt-1">{{ session('surat_pemberitahuan_path') ? basename(session('surat_pemberitahuan_path')) : '-' }}</p>
+                        <p class="text-textPrimary text-sm sm:text-base font-semibold">Surat Permohonan Kunjungan</p>
+                        <p class="text-textPrimary text-sm sm:text-base font-normal mt-1">{{ session('surat_pemberitahuan_path') ? basename(session('surat_pemberitahuan_path')) : '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-textPrimary text-base font-semibold">Surat Perintah Tugas</p>
-                        <p class="text-textPrimary text-base font-normal mt-1">{{ session('surat_tugas_path') ? basename(session('surat_tugas_path')) : '-' }}</p>
+                        <p class="text-textPrimary text-sm sm:text-base font-semibold">Surat Perintah Tugas</p>
+                        <p class="text-textPrimary text-sm sm:text-base font-normal mt-1">{{ session('surat_tugas_path') ? basename(session('surat_tugas_path')) : '-' }}</p>
                     </div>
                 </div>
 
@@ -352,26 +349,25 @@
         </main>
 
         <!-- Tombol Aksi -->
-        <footer class="mt-16 flex flex-col items-center justify-center gap-y-5 no-print">
-            <form method="POST" action="{{ route('konfirmasi.store') }}" class="w-full max-w-[260px] flex flex-col gap-5">
+        <footer class="mt-12 sm:mt-16 flex flex-col items-center justify-center gap-y-4 sm:gap-y-5 no-print pb-8">
+            <form method="POST" action="{{ route('konfirmasi.store') }}" class="w-full max-w-[280px] sm:max-w-[260px] flex flex-col gap-4 sm:gap-5">
                 @csrf
-                <button type="submit" class="w-full h-[52px] bg-primary rounded-[24px] text-white text-xl font-bold hover:bg-primaryDark transition-colors">Kirim Data</button>
-                <a href="{{ route('form.tamu') }}" class="w-full h-[52px] border-2 border-primary rounded-[24px] text-primary text-xl font-bold hover:bg-primary/10 transition-colors flex items-center justify-center">Kembali</a>
+                <button type="submit" class="w-full h-[48px] sm:h-[52px] bg-primary rounded-[24px] text-white text-lg sm:text-xl font-bold hover:bg-primaryDark transition-colors">Kirim Data</button>
+                <a href="{{ route('form.tamu') }}" class="w-full h-[48px] sm:h-[52px] border-2 border-primary rounded-[24px] text-primary text-lg sm:text-xl font-bold hover:bg-primary/10 transition-colors flex items-center justify-center">Kembali</a>
             </form>
         </footer>
     </div>
 
     <!-- Flash Messages -->
-    <div id="successMessage" class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden">
+    <div id="successMessage" class="fixed top-4 sm:top-5 right-4 sm:right-5 left-4 sm:left-auto bg-green-500 text-white px-4 sm:px-6 py-3 rounded-lg shadow-lg z-50 hidden text-center sm:text-left">
         Data berhasil dikirim!
     </div>
-    <div id="errorMessage" class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden">
+    <div id="errorMessage" class="fixed top-4 sm:top-5 right-4 sm:right-5 left-4 sm:left-auto bg-red-500 text-white px-4 sm:px-6 py-3 rounded-lg shadow-lg z-50 hidden text-center sm:text-left">
         Terjadi kesalahan!
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto hide flash messages
             const messages = document.querySelectorAll('[id$="Message"]');
             messages.forEach(message => {
                 if (!message.classList.contains('hidden')) {
