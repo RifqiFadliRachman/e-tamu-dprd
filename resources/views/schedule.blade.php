@@ -44,7 +44,6 @@
     <div class="w-full min-h-screen bg-white flex justify-center items-start">
         <div class="w-full max-w-[1440px] min-h-screen bg-white px-4 sm:px-8 md:px-16 py-6 sm:py-10 pb-16 sm:pb-20">
 
-            <!-- Header: Title + Close Button -->
             <div class="flex justify-between items-start">
                 <div>
                     <div class="text-primaryDark text-lg sm:text-xl md:text-2xl font-semibold">TAHAP 1</div>
@@ -57,7 +56,6 @@
                 </a>
             </div>
 
-            <!-- Step Progress -->
             <div class="flex justify-center items-center mt-6 sm:mt-8 md:mt-10">
                 <div class="flex items-center gap-4 sm:gap-6 md:gap-10 lg:gap-12">
                     <div class="w-[30px] h-[30px] sm:w-[37px] sm:h-[37px] bg-primary rounded-full flex items-center justify-center"><span class="text-white text-base sm:text-xl font-bold font-inter">1</span></div>
@@ -68,7 +66,6 @@
                 </div>
             </div>
 
-            <!-- Month Selector -->
             <div class="flex justify-center mt-6 sm:mt-8">
                 <div class="w-full max-w-[340px] sm:max-w-[450px] md:max-w-[555px] h-[50px] sm:h-[56px] md:h-[62px] bg-primary rounded-[20px] md:rounded-[25px] relative flex items-center justify-center">
                     <div id="prevMonth" class="absolute top-1/2 -translate-y-1/2 left-3 sm:left-4 w-[35px] sm:w-[41px] h-[24px] sm:h-[28px] cursor-pointer flex items-center justify-center"><svg class="w-[8px] sm:w-[10px] h-[12px] sm:h-[14px]" viewBox="0 0 10 14" fill="none"><path d="M8 2L2 7l6 5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
@@ -77,7 +74,6 @@
                 </div>
             </div>
 
-            <!-- Calendar -->
             <div class="flex justify-center mt-4 sm:mt-6">
                 <div class="w-full max-w-[360px] sm:max-w-[500px] md:max-w-[700px] lg:max-w-[846px]">
                     <div class="w-full grid grid-cols-7 place-items-center mb-3 sm:mb-4 gap-1">
@@ -93,7 +89,6 @@
                 </div>
             </div>
 
-            <!-- Time Picker -->
             <form id="scheduleForm" method="POST" action="{{ route('jadwal.kunjungan.store') }}">
                 @csrf
                 <input type="hidden" id="tanggalInput" name="tanggal_kunjungan" value="">
@@ -113,7 +108,6 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
                 <div class="flex flex-col items-center mt-6 sm:mt-8">
                     <p class="text-textSecondary text-xs sm:text-sm md:text-base font-semibold mb-3 sm:mb-4 text-center px-4">
                         Silakan pilih waktu kunjungan dari opsi berikut
@@ -195,8 +189,15 @@
 
                 for (let d = 1; d <= daysInMonth; d++) {
                     const currentDate = new Date(year, month, d);
+                    
+                    // [DIPERBARUI] Cek apakah hari ini sudah lewat ATAU hari Sabtu(6)/Minggu(0)
                     const isPast = currentDate < today;
-                    const cell = createDayCell(d, !isPast, currentDate);
+                    const isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+                    
+                    // Hari tidak bisa dipilih jika sudah lewat ATAU jika hari libur
+                    const canSelect = !isPast && !isWeekend; 
+
+                    const cell = createDayCell(d, canSelect, currentDate);
                     if (selectedDate && selectedDate.getTime() === currentDate.getTime()) {
                         cell.classList.add('selected');
                     }
@@ -213,7 +214,15 @@
             nextBtn.addEventListener('click', () => { displayed.setMonth(displayed.getMonth() + 1); renderCalendar(); });
 
             timeInputEl.addEventListener('input', () => {
-                selectedTime = timeInputEl.value;
+                // [DIPERBARUI] Cek apakah jam di luar 08:00 - 16:00
+                const val = timeInputEl.value;
+                if(val && (val < '08:00' || val > '16:00')) {
+                    alert('Maaf, jam pelayanan kunjungan hanya dari pukul 08:00 sampai 16:00 WIB.');
+                    timeInputEl.value = '';
+                    selectedTime = '';
+                } else {
+                    selectedTime = val;
+                }
                 updateContinueState();
             });
 

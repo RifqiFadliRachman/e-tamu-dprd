@@ -26,12 +26,32 @@ class TamuController extends Controller
 
     /**
      * Tahap 1: Menyimpan pilihan jadwal ke session.
+     * [DIPERBARUI] Menambahkan validasi penolakan Sabtu/Minggu dan jam 08:00-16:00.
      */
     public function submitJadwal(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'tanggal_kunjungan' => 'required|date',
-            'waktu_kunjungan' => 'required|string'
+            'tanggal_kunjungan' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if (\Carbon\Carbon::parse($value)->isWeekend()) {
+                        $fail('Kunjungan tidak dapat dilakukan pada hari libur (Sabtu & Minggu).');
+                    }
+                }
+            ],
+            'waktu_kunjungan' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    $time = strtotime($value);
+                    $start = strtotime('08:00');
+                    $end = strtotime('16:00');
+                    if ($time < $start || $time > $end) {
+                        $fail('Waktu kunjungan harus antara pukul 08:00 hingga 16:00 WIB.');
+                    }
+                }
+            ]
         ]);
 
         $request->session()->put('step2_data', $validated);
@@ -217,7 +237,25 @@ class TamuController extends Controller
     public function searchDaftarTamu(Request $request): View
     {
         $query = Tamu::query();
-        // ... (Logika filter dan search sama dengan showDaftarTamu) ...
+        
+        if ($request->has('filter') && $request->filter != 'semua') {
+            $filterValue = $request->filter;
+            if ($filterValue === 'lainnya') {
+                $query->whereNotIn('jenis_kunjungan', ['kunjungan_kerja', 'kunjungan_tamu']);
+            } else {
+                $query->where('jenis_kunjungan', $filterValue);
+            }
+        }
+
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('nomor_kontak', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('jenis_kunjungan', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
         $daftarTamu = $query->latest()->paginate(10);
         return view('admin.partials.daftar-tamu-content', compact('daftarTamu'));
     }
